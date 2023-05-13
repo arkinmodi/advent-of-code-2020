@@ -96,8 +96,12 @@ int day2PartB(char filename[]) {
     char letter = strtok(NULL, ":")[0];
     char *password = strtok(NULL, " ");
 
-    if ((password[positionA] != password[positionB]) &&
-        (password[positionA] == letter || password[positionB] == letter)) {
+    // if ((password[positionA] != password[positionB]) &&
+    //     (password[positionA] == letter || password[positionB] == letter)) {
+    //   validPasswords++;
+    // }
+
+    if (password[positionA] == letter ^ password[positionB] == letter) {
       validPasswords++;
     }
   }
