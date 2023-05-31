@@ -1,2 +1,3 @@
 *.o
 */day_??
+.DS_Store
