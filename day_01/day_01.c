@@ -5,78 +5,49 @@
 #include <stdlib.h>
 #include <string.h>
 
-int day_1_part_a(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return 1;
-  }
+#include "../common/IntList.h"
 
-  char buffer[6];
-  int numOfExpenses = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    numOfExpenses++;
-  }
-  rewind(inputFile);
-
-  int expenses[numOfExpenses];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < numOfExpenses) {
-    expenses[i++] = strtol(buffer, NULL, 10);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return 1;
-  }
-
-  for (i = 0; i < numOfExpenses; i++) {
-    for (int j = i + 1; j < numOfExpenses; j++) {
-      if (expenses[i] + expenses[j] == 2020) {
-        return expenses[i] * expenses[j];
+int day_1_part_a(IntList *input_list) {
+  for (int i = 0; i < input_list->size; i++) {
+    for (int j = i + 1; j < input_list->size; j++) {
+      if (input_list->arr[i] + input_list->arr[j] == 2020) {
+        return input_list->arr[i] * input_list->arr[j];
       }
     }
   }
   return 0;
 }
 
-int day_1_part_b(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
+int day_1_part_b(IntList *input_list) {
+  for (int i = 0; i < input_list->size; i++) {
+    for (int j = i + 1; j < input_list->size; j++) {
+      for (int k = j + 1; k < input_list->size; k++) {
+        if (input_list->arr[i] + input_list->arr[j] + input_list->arr[k] ==
+            2020) {
+          return input_list->arr[i] * input_list->arr[j] * input_list->arr[k];
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+int parse_input(IntList *list, char *filename) {
+  FILE *input_file;
+  input_file = fopen(filename, "r");
+  if (input_file == NULL) {
+    fprintf(stderr, "Failed to open file: %s", filename);
     return 1;
   }
 
   char buffer[6];
-  int numOfExpenses = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    numOfExpenses++;
-  }
-  rewind(inputFile);
-
-  int expenses[numOfExpenses];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < numOfExpenses) {
-    expenses[i++] = strtol(buffer, NULL, 10);
+  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+    IntList_push_back(list, strtol(buffer, NULL, 10));
   }
 
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
+  if (fclose(input_file)) {
+    fprintf(stderr, "Failed to close file: %s", filename);
     return 1;
-  }
-
-  for (i = 0; i < numOfExpenses; i++) {
-    for (int j = i + 1; j < numOfExpenses; j++) {
-      for (int k = j + 1; k < numOfExpenses; k++) {
-        if (expenses[i] + expenses[j] + expenses[k] == 2020) {
-          return expenses[i] * expenses[j] * expenses[k];
-        }
-      }
-    }
   }
   return 0;
 }
@@ -86,13 +57,22 @@ int main(int argc, char *argv[]) {
     printf("Missing input file!\n");
     return 1;
   }
+
   char *filename = argv[1];
+  IntList input_list;
+  IntList_init_array(&input_list, 200);
 
-  int part_a = day_1_part_a(filename);
-  printf("Day 1 Part A:\t%d\n", part_a);
+  if (parse_input(&input_list, filename)) {
+    return 1;
+  }
 
-  int part_b = day_1_part_b(filename);
-  printf("Day 1 Part B:\t%d\n", part_b);
+  int part_a = day_1_part_a(&input_list);
+  printf("Day 01 Part A:\t%d\n", part_a);
+
+  int part_b = day_1_part_b(&input_list);
+  printf("Day 01 Part B:\t%d\n", part_b);
+
+  IntList_free_array(&input_list);
 
   return 0;
 }
