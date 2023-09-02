@@ -90,7 +90,6 @@ int day6PartB(char filename[]) {
 
   int output = 0;
   for (i = 0; i < size; i++) {
-
     int groupSize = 0;
     while (i < size && strcmp(input[i], "")) {
       for (int j = 0; j < strlen(input[i]); j++) {

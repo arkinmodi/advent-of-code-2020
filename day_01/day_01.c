@@ -1,9 +1,11 @@
+#include "day_01.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int day1PartA(char filename[]) {
+int day_1_part_a(char filename[]) {
   FILE *inputFile;
   inputFile = fopen(filename, "r");
   if (inputFile == NULL) {
@@ -40,7 +42,7 @@ int day1PartA(char filename[]) {
   return 0;
 }
 
-int day1PartB(char filename[]) {
+int day_1_part_b(char filename[]) {
   FILE *inputFile;
   inputFile = fopen(filename, "r");
   if (inputFile == NULL) {
@@ -79,22 +81,18 @@ int day1PartB(char filename[]) {
   return 0;
 }
 
-int main() {
-  int partA_example = day1PartA("example.txt");
-  printf("Day 1 Part A (example):\t%d\n", partA_example);
-  assert(partA_example == 514579);
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    printf("Missing input file!\n");
+    return 1;
+  }
+  char *filename = argv[1];
 
-  int partA_input = day1PartA("input.txt");
-  printf("Day 1 Part A (input):\t%d\n", partA_input);
-  assert(partA_input == 703131);
+  int part_a = day_1_part_a(filename);
+  printf("Day 1 Part A:\t%d\n", part_a);
 
-  int partB_example = day1PartB("example.txt");
-  printf("Day 1 Part B (example):\t%d\n", partB_example);
-  assert(partB_example == 241861950);
-
-  int partB_input = day1PartB("input.txt");
-  printf("Day 1 Part B (input):\t%d\n", partB_input);
-  assert(partB_input == 272423970);
+  int part_b = day_1_part_b(filename);
+  printf("Day 1 Part B:\t%d\n", part_b);
 
   return 0;
 }
