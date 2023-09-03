@@ -1,8 +1,12 @@
+#include "day_04.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../common/CharList.h"
 
 struct Passport {
   bool byr;
@@ -15,43 +19,16 @@ struct Passport {
   bool cid;
 };
 
-int day4PartA(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
+int day_4_part_a(CharList* input_list) {
+  int valid_passports = 0;
 
-  char buffer[100];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
-
-  char input[size][100];
-
+  static const struct Passport empty_passport;
   int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
+  while (i < input_list->size) {
+    struct Passport passport = empty_passport;
 
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int validPassports = 0;
-
-  static const struct Passport emptyPassport;
-  i = 0;
-  while (i < size) {
-    struct Passport passport = emptyPassport;
-
-    while (i < size && strcmp(input[i], "") != 0) {
-      char *split = strtok(input[i], " :");
+    while (i < input_list->size && strcmp(input_list->arr[i], "") != 0) {
+      char* split = strtok(input_list->arr[i], " :");
       while (split != NULL) {
         if (strcmp(split, "byr") == 0) {
           passport.byr = true;
@@ -79,52 +56,24 @@ int day4PartA(char filename[]) {
 
     if (passport.byr && passport.iyr && passport.eyr && passport.hgt &&
         passport.hcl && passport.ecl && passport.pid) {
-      validPassports++;
+      valid_passports++;
     }
 
     i++;
   }
-
-  return validPassports;
+  return valid_passports;
 }
 
-int day4PartB(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
+int day_4_part_b(CharList* input_list) {
+  int valid_passports = 0;
 
-  char buffer[100];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
-
-  char input[size][100];
-
+  static const struct Passport empty_passport;
   int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
+  while (i < input_list->size) {
+    struct Passport passport = empty_passport;
 
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int validPassports = 0;
-
-  static const struct Passport emptyPassport;
-  i = 0;
-  while (i < size) {
-    struct Passport passport = emptyPassport;
-
-    while (i < size && strcmp(input[i], "") != 0) {
-      char *split = strtok(input[i], " :");
+    while (i < input_list->size && strcmp(input_list->arr[i], "") != 0) {
+      char* split = strtok(input_list->arr[i], " :");
       while (split != NULL) {
         if (strcmp(split, "byr") == 0) {
           split = strtok(NULL, " :");
@@ -144,23 +93,23 @@ int day4PartB(char filename[]) {
         } else if (strcmp(split, "hgt") == 0) {
           split = strtok(NULL, " :");
 
-          int hgtLength = strlen(split);
-          char hgtString[hgtLength - 2];
+          int hgt_length = strlen(split);
+          char hgt_string[hgt_length - 2];
           char units[3];
 
-          // strncpy(units, split + hgtLength - 2, 2);
-          // strncpy(hgtString, split, hgtLength - 2);
+          // strncpy(units, split + hgt_length - 2, 2);
+          // strncpy(hgt_string, split, hgt_length - 2);
 
-          for (int j = 0; j < hgtLength - 2; j++) {
-            hgtString[j] = split[j];
+          for (int j = 0; j < hgt_length - 2; j++) {
+            hgt_string[j] = split[j];
           }
-          hgtString[hgtLength - 2] = '\0';
+          hgt_string[hgt_length - 2] = '\0';
 
-          units[0] = split[hgtLength - 2];
-          units[1] = split[hgtLength - 1];
+          units[0] = split[hgt_length - 2];
+          units[1] = split[hgt_length - 1];
           units[2] = '\0';
 
-          int hgt = atoi(hgtString);
+          int hgt = atoi(hgt_string);
           if (strcmp(units, "cm") == 0) {
             passport.hgt = 150 <= hgt && hgt <= 193;
           } else if (strcmp(units, "in") == 0) {
@@ -169,17 +118,17 @@ int day4PartB(char filename[]) {
 
         } else if (strcmp(split, "hcl") == 0) {
           split = strtok(NULL, " :");
-          bool isValid = false;
+          bool is_valid = false;
           if (strlen(split) == 7 && split[0] == '#') {
-            isValid = true;
+            is_valid = true;
             for (int j = 1; j < 7; j++) {
               if (!(('0' <= split[j] && split[j] <= '9') ||
                     ('a' <= split[j] && split[j] <= 'f'))) {
-                isValid = false;
+                is_valid = false;
               }
             }
           }
-          passport.hcl = isValid;
+          passport.hcl = is_valid;
 
         } else if (strcmp(split, "ecl") == 0) {
           split = strtok(NULL, " :");
@@ -205,31 +154,56 @@ int day4PartB(char filename[]) {
 
     if (passport.byr && passport.iyr && passport.eyr && passport.hgt &&
         passport.hcl && passport.ecl && passport.pid) {
-      validPassports++;
+      valid_passports++;
     }
 
     i++;
   }
 
-  return validPassports;
+  return valid_passports;
 }
 
-int main() {
-  int partA_example = day4PartA("example_partA.txt");
-  printf("Day 4 Part A (example):\t%d\n", partA_example);
-  assert(partA_example == 2);
+int parse_input(CharList* list, char* filename) {
+  FILE* input_file;
+  input_file = fopen(filename, "r");
+  if (input_file == NULL) {
+    fprintf(stderr, "Failed to open file: %s", filename);
+    return 1;
+  }
 
-  int partA_input = day4PartA("input.txt");
-  printf("Day 4 Part A (input):\t%d\n", partA_input);
-  assert(partA_input == 226);
+  char buffer[100];
+  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+    buffer[strcspn(buffer, "\n")] = 0;
+    CharList_push_back(list, buffer);
+  }
 
-  int partB_example = day4PartB("example_partB.txt");
-  printf("Day 4 Part B (example):\t%d\n", partB_example);
-  assert(partB_example == 4);
+  if (fclose(input_file)) {
+    fprintf(stderr, "Failed to close file: %s", filename);
+    return 1;
+  }
+  return 0;
+}
 
-  int partB_input = day4PartB("input.txt");
-  printf("Day 4 Part B (input):\t%u\n", partB_input);
-  assert(partB_input == 160);
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    printf("Missing input file!\n");
+    return 1;
+  }
 
+  char* filename = argv[1];
+  CharList input_list;
+  CharList_init_array(&input_list, 1100);
+
+  if (parse_input(&input_list, filename)) {
+    return 1;
+  }
+
+  int part_a = day_4_part_a(&input_list);
+  printf("Day 04 Part A:\t%d\n", part_a);
+
+  int part_b = day_4_part_b(&input_list);
+  printf("Day 04 Part B:\t%d\n", part_b);
+
+  CharList_free_array(&input_list);
   return 0;
 }
