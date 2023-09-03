@@ -1,7 +1,16 @@
+DEPS_SRC := ../common/CharList.c
+DEPS := $(patsubst %.c, %.o, $(DEPS_SRC))
+
 .PHONY: all
 all: day_03
 
-day_03: day_03.o
+.NOTPARALLEL: test
+.PHONY: test
+test: day_03.o $(DEPS) day_03_test.o
+	gcc -e _test -o $@ $^
+	./test
+
+day_03: day_03.o $(DEPS)
 	gcc -o $@ $^
 
 %.o: %.c
@@ -9,4 +18,4 @@ day_03: day_03.o
 
 .PHONY: clean
 clean:
-	rm -f day_03 *.o
+	rm -f day_03 test *.o
