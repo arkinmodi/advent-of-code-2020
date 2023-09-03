@@ -1,9 +1,10 @@
-DEPS_SRC := ../common/IntList.o
+DEPS_SRC := ../common/IntList.c
 DEPS := $(patsubst %.c, %.o, $(DEPS_SRC))
 
 .PHONY: all
 all: day_01
 
+.NOTPARALLEL: test
 .PHONY: test
 test: day_01.o $(DEPS) day_01_test.o
 	gcc -e _test -o $@ $^

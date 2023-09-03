@@ -12,7 +12,7 @@ int test_part_a(char* filename, int expected) {
   }
 
   int actual = day_1_part_a(&list);
-  printf("Day 1 Part A (%s):\t%d\n", filename, actual);
+  printf("Day 01 Part A (%s):\t%d\n", filename, actual);
   assert(actual == expected);
 
   IntList_free_array(&list);
@@ -28,7 +28,7 @@ int test_part_b(char* filename, int expected) {
   }
 
   int actual = day_1_part_b(&list);
-  printf("Day 1 Part B (%s):\t%d\n", filename, actual);
+  printf("Day 01 Part B (%s):\t%d\n", filename, actual);
   assert(actual == expected);
 
   IntList_free_array(&list);
@@ -50,7 +50,7 @@ int test(void) {
   printf(
       "\n///////////////////////////////"
       " END DAY 01 TEST "
-      "////////////////////////////////\n");
+      "////////////////////////////////\n\n");
 
   return 0;
 }

@@ -7,6 +7,6 @@
 
 int day_1_part_a(IntList* input_list);
 int day_1_part_b(IntList* input_list);
-int parse_input(IntList *list, char *filename);
+int parse_input(IntList* list, char* filename);
 
 #endif

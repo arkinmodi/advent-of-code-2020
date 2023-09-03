@@ -3,37 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-int day2PartA(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
+#include "../common/CharList.h"
 
-  char buffer[50];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
+int day_2_part_a(CharList *input_list) {
+  int valid_passwords = 0;
+  for (int i = 0; i < input_list->size; i++) {
+    char copy[strlen(input_list->arr[i])];
+    strcpy(copy, input_list->arr[i]);
 
-  char input[size][50];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int validPasswords = 0;
-  for (int i = 0; i < size; i++) {
-    char *split = strtok(input[i], "-");
+    char *split = strtok(copy, "-");
     int min = atoi(split);
 
     split = strtok(NULL, " ");
@@ -50,81 +28,80 @@ int day2PartA(char filename[]) {
     }
 
     if (min <= count && count <= max) {
-      validPasswords++;
+      valid_passwords++;
     }
   }
-
-  return validPasswords;
+  return valid_passwords;
 }
 
-int day2PartB(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
+int day_2_part_b(CharList *input_list) {
+  int valid_passwords = 0;
+  for (int i = 0; i < input_list->size; i++) {
+    char copy[strlen(input_list->arr[i])];
+    strcpy(copy, input_list->arr[i]);
 
-  char buffer[50];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
-
-  char input[size][50];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int validPasswords = 0;
-  for (int i = 0; i < size; i++) {
-    char *split = strtok(input[i], "-");
-    int positionA = atoi(split) - 1;
+    char *split = strtok(copy, "-");
+    int position_a = atoi(split) - 1;
 
     split = strtok(NULL, " ");
-    int positionB = atoi(split) - 1;
+    int position_b = atoi(split) - 1;
 
     char letter = strtok(NULL, ":")[0];
     char *password = strtok(NULL, " ");
 
-    // if ((password[positionA] != password[positionB]) &&
-    //     (password[positionA] == letter || password[positionB] == letter)) {
-    //   validPasswords++;
+    // if ((password[position_a] != password[position_b]) &&
+    //     (password[position_a] == letter || password[position_b] == letter)) {
+    //   valid_passwords++;
     // }
 
-    if (password[positionA] == letter ^ password[positionB] == letter) {
-      validPasswords++;
+    if (password[position_a] == letter ^ password[position_b] == letter) {
+      valid_passwords++;
     }
   }
-
-  return validPasswords;
+  return valid_passwords;
 }
 
-int main() {
-  int partA_example = day2PartA("example.txt");
-  printf("Day 2 Part A (example):\t%d\n", partA_example);
-  assert(partA_example == 2);
+int parse_input(CharList *list, char *filename) {
+  FILE *input_file;
+  input_file = fopen(filename, "r");
+  if (input_file == NULL) {
+    fprintf(stderr, "Failed to open file: %s", filename);
+    return 1;
+  }
 
-  int partA_input = day2PartA("input.txt");
-  printf("Day 2 Part A (input):\t%d\n", partA_input);
-  assert(partA_input == 500);
+  char buffer[50];
+  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+    buffer[strcspn(buffer, "\n")] = 0;
+    CharList_push_back(list, buffer);
+  }
 
-  int partB_example = day2PartB("example.txt");
-  printf("Day 2 Part B (example):\t%d\n", partB_example);
-  assert(partB_example == 1);
+  if (fclose(input_file)) {
+    fprintf(stderr, "Failed to close file: %s", filename);
+    return 1;
+  }
+  return 0;
+}
 
-  int partB_input = day2PartB("input.txt");
-  printf("Day 2 Part B (input):\t%d\n", partB_input);
-  assert(partB_input == 313);
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    printf("Missing input file!\n");
+    return 1;
+  }
 
+  char *filename = argv[1];
+  CharList input_list;
+  CharList_init_array(&input_list, 1000);
+
+  if (parse_input(&input_list, filename)) {
+    return 1;
+  }
+
+  int part_a = day_2_part_a(&input_list);
+  printf("Day 02 Part A:\t%d\n", part_a);
+
+  int part_b = day_2_part_b(&input_list);
+  printf("Day 02 Part B:\t%d\n", part_b);
+
+  CharList_free_array(&input_list);
   return 0;
 }

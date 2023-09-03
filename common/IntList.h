@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _COMMON_LIST_H_
-#define _COMMON_LIST_H_
+#ifndef _COMMON_INT_LIST_H_
+#define _COMMON_INT_LIST_H_
 
 typedef struct {
   int capacity;
