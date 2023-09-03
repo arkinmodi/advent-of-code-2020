@@ -1,20 +1,25 @@
+CC := gcc
+CFLAGS := -g -O2 -Wall -Wextra -Werror -pg -std=c99
+
 DEPS_SRC := ../common/CharList.c
 DEPS := $(patsubst %.c, %.o, $(DEPS_SRC))
 
 .PHONY: all
 all: day_04
 
-.NOTPARALLEL: test
-.PHONY: test
-test: day_04.o $(DEPS) day_04_test.o
-	clang -e _test -o $@ $^
+.NOTPARALLEL: run-test
+.PHONY: run-test
+run-test: test
 	./test
 
-day_04: day_04.o $(DEPS)
-	clang -o $@ $^
+test: day_04.o $(DEPS) day_04_test.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+day_04: day_04.o $(DEPS) day_04_cli.o
+	$(CC) $(CFLAGS) -o $@ $^
 
 %.o: %.c
-	clang -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:

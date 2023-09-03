@@ -1,4 +1,5 @@
-#include <assert.h>
+#include "day_02.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +22,7 @@ int day_2_part_a(CharList *input_list) {
     char *password = strtok(NULL, " ");
 
     int count = 0;
-    for (int j = 0; j < strlen(password); j++) {
+    for (unsigned long j = 0; j < strlen(password); j++) {
       if (password[j] == letter[0]) {
         count++;
       }
@@ -49,14 +50,15 @@ int day_2_part_b(CharList *input_list) {
     char letter = strtok(NULL, ":")[0];
     char *password = strtok(NULL, " ");
 
-    // if ((password[position_a] != password[position_b]) &&
-    //     (password[position_a] == letter || password[position_b] == letter)) {
-    //   valid_passwords++;
-    // }
-
-    if (password[position_a] == letter ^ password[position_b] == letter) {
+    if ((password[position_a] != password[position_b]) &&
+        (password[position_a] == letter || password[position_b] == letter)) {
       valid_passwords++;
     }
+
+    // if (password[position_a] == letter ^ password[position_b] == letter)
+    // {
+    //   valid_passwords++;
+    // }
   }
   return valid_passwords;
 }
@@ -79,29 +81,5 @@ int parse_input(CharList *list, char *filename) {
     fprintf(stderr, "Failed to close file: %s", filename);
     return 1;
   }
-  return 0;
-}
-
-int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    printf("Missing input file!\n");
-    return 1;
-  }
-
-  char *filename = argv[1];
-  CharList input_list;
-  CharList_init_array(&input_list, 1000);
-
-  if (parse_input(&input_list, filename)) {
-    return 1;
-  }
-
-  int part_a = day_2_part_a(&input_list);
-  printf("Day 02 Part A:\t%d\n", part_a);
-
-  int part_b = day_2_part_b(&input_list);
-  printf("Day 02 Part B:\t%d\n", part_b);
-
-  CharList_free_array(&input_list);
   return 0;
 }

@@ -11,4 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: make test
+      - run: docker build -t tests -f Dockerfile .
+      - run: docker run --rm tests

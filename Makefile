@@ -7,16 +7,20 @@ COMMON_DEPS := $(patsubst %.c, %.o, $(COMMON_DEPS_SRC))
 all: $(AOC_DAYS)
 
 %.o: %.c
-	clang -c $< -o $@
+	gcc -c $< -o $@
 
 .PHONY: $(AOC_DAYS)
 $(AOC_DAYS): $(COMMON_DEPS)
 	make -C $@
 
-.NOTPARALLEL: test
 .PHONY: test
 test:
-	for day in $(AOC_DAYS); do make -C $$day test; done
+	for day in $(AOC_DAYS); do make -C $$day test || exit 1; done
+
+.NOTPARALLEL: run-test
+.PHONY: run-test
+run-test:
+	for day in $(AOC_DAYS); do make -C $$day run-test || exit 1; done
 
 .PHONY: lint
 lint:
@@ -25,4 +29,4 @@ lint:
 .PHONY: clean
 clean:
 	rm -f $(COMMON_DEPS_DIR)/*.o
-	for day in $(AOC_DAYS); do make -C $$day clean; done
+	for day in $(AOC_DAYS); do make -C $$day clean || exit 1; done
