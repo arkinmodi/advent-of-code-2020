@@ -7,14 +7,14 @@ all: day_05
 .NOTPARALLEL: test
 .PHONY: test
 test: day_05.o $(DEPS) day_05_test.o
-	gcc -e _test -o $@ $^
+	clang -e _test -o $@ $^
 	./test
 
 day_05: day_05.o $(DEPS)
-	gcc -o $@ $^
+	clang -o $@ $^
 
 %.o: %.c
-	gcc -c $< -o $@
+	clang -c $< -o $@
 
 .PHONY: clean
 clean:

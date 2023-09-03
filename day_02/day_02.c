@@ -69,8 +69,8 @@ int parse_input(CharList *list, char *filename) {
     return 1;
   }
 
-  char buffer[50];
-  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+  char buffer[51];
+  while (fgets(buffer, sizeof(buffer), input_file)) {
     buffer[strcspn(buffer, "\n")] = 0;
     CharList_push_back(list, buffer);
   }

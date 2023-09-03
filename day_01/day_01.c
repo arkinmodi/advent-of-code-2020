@@ -40,8 +40,8 @@ int parse_input(IntList *list, char *filename) {
     return 1;
   }
 
-  char buffer[6];
-  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+  char buffer[7];
+  while (fgets(buffer, sizeof(buffer), input_file)) {
     IntList_push_back(list, strtol(buffer, NULL, 10));
   }
 

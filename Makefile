@@ -7,7 +7,7 @@ COMMON_DEPS := $(patsubst %.c, %.o, $(COMMON_DEPS_SRC))
 all: $(AOC_DAYS)
 
 %.o: %.c
-	gcc -c $< -o $@
+	clang -c $< -o $@
 
 .PHONY: $(AOC_DAYS)
 $(AOC_DAYS): $(COMMON_DEPS)
