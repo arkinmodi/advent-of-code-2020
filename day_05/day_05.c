@@ -1,10 +1,14 @@
+#include "day_05.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int calculateSeatId(char *input) {
+#include "../common/CharList.h"
+
+int calculate_seat_id(char *input) {
   int i = 0;
 
   int top = 127;
@@ -31,104 +35,78 @@ int calculateSeatId(char *input) {
   return top * 8 + right;
 }
 
-int day5PartA(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
-
-  char buffer[100];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
-
-  char input[size][100];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int maxSeatId = 0;
-  for (i = 0; i < size; i++) {
-    int seatId = calculateSeatId(input[i]);
-    if (seatId > maxSeatId) {
-      maxSeatId = seatId;
+int day_5_part_a(CharList *input_list) {
+  int max_seat_id = 0;
+  for (int i = 0; i < input_list->size; i++) {
+    int seat_id = calculate_seat_id(input_list->arr[i]);
+    if (seat_id > max_seat_id) {
+      max_seat_id = seat_id;
     }
   }
-  return maxSeatId;
+  return max_seat_id;
 }
 
 int comparator(const void *p1, const void *p2) {
   return (*(int *)p1 - *(int *)p2);
 }
 
-int day5PartB(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
+int day_5_part_b(CharList *input_list) {
+  int seat_ids[input_list->size];
+  for (int i = 0; i < input_list->size; i++) {
+    seat_ids[i] = calculate_seat_id(input_list->arr[i]);
   }
 
-  char buffer[100];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
+  qsort(seat_ids, input_list->size, sizeof(int), comparator);
 
-  char input[size][100];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int seatIds[size];
-  for (i = 0; i < size; i++) {
-    seatIds[i] = calculateSeatId(input[i]);
-  }
-
-  qsort(seatIds, size, sizeof(int), comparator);
-
-  for (i = 0; i < size - 1; i++) {
-    if (seatIds[i + 1] - seatIds[i] > 1) {
-      return seatIds[i] + 1;
+  for (int i = 0; i < input_list->size - 1; i++) {
+    if (seat_ids[i + 1] - seat_ids[i] > 1) {
+      return seat_ids[i] + 1;
     }
   }
-
   return -1;
 }
 
-int main() {
-  int partA_example = day5PartA("example.txt");
-  printf("Day 5 Part A (example):\t%d\n", partA_example);
-  assert(partA_example == 820);
+int parse_input(CharList *list, char *filename) {
+  FILE *input_file;
+  input_file = fopen(filename, "r");
+  if (input_file == NULL) {
+    fprintf(stderr, "Failed to open file: %s", filename);
+    return 1;
+  }
 
-  int partA_input = day5PartA("input.txt");
-  printf("Day 5 Part A (input):\t%d\n", partA_input);
-  assert(partA_input == 864);
+  char buffer[100];
+  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+    buffer[strcspn(buffer, "\n")] = 0;
+    CharList_push_back(list, buffer);
+  }
 
-  int partB_input = day5PartB("input.txt");
-  printf("Day 5 Part B (input):\t%d\n", partB_input);
-  assert(partB_input == 739);
+  if (fclose(input_file)) {
+    fprintf(stderr, "Failed to close file: %s", filename);
+    return 1;
+  }
+  return 0;
+}
 
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    printf("Missing input file!\n");
+    return 1;
+  }
+
+  char *filename = argv[1];
+  CharList input_list;
+  CharList_init_array(&input_list, 789);
+
+  if (parse_input(&input_list, filename)) {
+    return 1;
+  }
+
+  int part_a = day_5_part_a(&input_list);
+  printf("Day 05 Part A:\t%d\n", part_a);
+
+  int part_b = day_5_part_b(&input_list);
+  printf("Day 05 Part B:\t%d\n", part_b);
+
+  CharList_free_array(&input_list);
   return 0;
 }
