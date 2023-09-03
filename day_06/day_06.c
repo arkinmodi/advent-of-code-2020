@@ -1,131 +1,106 @@
+#include "day_06.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int day6PartA(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
+#include "../common/CharList.h"
 
-  char buffer[100];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
-
-  char input[size][100];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  bool groupAnswers[26];
-  for (i = 0; i < sizeof(groupAnswers) / sizeof(groupAnswers[0]); i++) {
-    groupAnswers[i] = false;
+int day_6_part_a(CharList *input_list) {
+  bool group_answers[26];
+  for (int i = 0; i < sizeof(group_answers) / sizeof(group_answers[0]); i++) {
+    group_answers[i] = false;
   }
 
   int output = 0;
-  for (i = 0; i < size; i++) {
-    while (i < size && strcmp(input[i], "")) {
-      for (int j = 0; j < strlen(input[i]); j++) {
-        groupAnswers[input[i][j] - 'a'] = true;
+  for (int i = 0; i < input_list->size; i++) {
+    while (i < input_list->size && strcmp(input_list->arr[i], "")) {
+      for (int j = 0; j < strlen(input_list->arr[i]); j++) {
+        group_answers[input_list->arr[i][j] - 'a'] = true;
       }
       i++;
     }
 
-    for (int j = 0; j < sizeof(groupAnswers) / sizeof(groupAnswers[0]); j++) {
-      output += groupAnswers[j];
-      groupAnswers[j] = false;
+    for (int j = 0; j < sizeof(group_answers) / sizeof(group_answers[0]); j++) {
+      output += group_answers[j];
+      group_answers[j] = false;
     }
   }
-
   return output;
 }
 
-int day6PartB(char filename[]) {
-  FILE *inputFile;
-  inputFile = fopen(filename, "r");
-  if (inputFile == NULL) {
-    perror("Failed to open file");
-    return -1;
-  }
-
-  char buffer[100];
-  int size = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile)) {
-    size++;
-  }
-  rewind(inputFile);
-
-  char input[size][100];
-
-  int i = 0;
-  while (fgets(buffer, sizeof(buffer) + 1, inputFile) && i < size) {
-    buffer[strcspn(buffer, "\n")] = 0;
-    strcpy(input[i++], buffer);
-  }
-
-  if (fclose(inputFile)) {
-    perror("Failed to close file");
-    return -1;
-  }
-
-  int groupAnswers[26];
-  for (i = 0; i < sizeof(groupAnswers) / sizeof(groupAnswers[0]); i++) {
-    groupAnswers[i] = 0;
+int day_6_part_b(CharList *input_list) {
+  int group_answers[26];
+  for (int i = 0; i < sizeof(group_answers) / sizeof(group_answers[0]); i++) {
+    group_answers[i] = 0;
   }
 
   int output = 0;
-  for (i = 0; i < size; i++) {
-    int groupSize = 0;
-    while (i < size && strcmp(input[i], "")) {
-      for (int j = 0; j < strlen(input[i]); j++) {
-        groupAnswers[input[i][j] - 'a']++;
+  for (int i = 0; i < input_list->size; i++) {
+    int group_size = 0;
+    while (i < input_list->size && strcmp(input_list->arr[i], "")) {
+      for (int j = 0; j < strlen(input_list->arr[i]); j++) {
+        group_answers[input_list->arr[i][j] - 'a']++;
       }
-      groupSize++;
+      group_size++;
       i++;
     }
 
-    for (int j = 0; j < sizeof(groupAnswers) / sizeof(groupAnswers[0]); j++) {
-      if (groupAnswers[j] == groupSize) {
+    for (int j = 0; j < sizeof(group_answers) / sizeof(group_answers[0]); j++) {
+      if (group_answers[j] == group_size) {
         output++;
       }
-      groupAnswers[j] = 0;
+      group_answers[j] = 0;
     }
   }
-
   return output;
 }
 
-int main() {
-  int partA_example = day6PartA("example.txt");
-  printf("Day 6 Part A (example):\t%d\n", partA_example);
-  assert(partA_example == 11);
+int parse_input(CharList *list, char *filename) {
+  FILE *input_file;
+  input_file = fopen(filename, "r");
+  if (input_file == NULL) {
+    fprintf(stderr, "Failed to open file: %s", filename);
+    return 1;
+  }
 
-  int partA_input = day6PartA("input.txt");
-  printf("Day 6 Part A (input):\t%d\n", partA_input);
-  assert(partA_input == 6532);
+  char buffer[100];
+  while (fgets(buffer, sizeof(buffer) + 1, input_file)) {
+    buffer[strcspn(buffer, "\n")] = 0;
+    CharList_push_back(list, buffer);
+  }
 
-  int partB_example = day6PartB("example.txt");
-  printf("Day 6 Part B (example):\t%d\n", partB_example);
-  assert(partB_example == 6);
+  if (fclose(input_file)) {
+    fprintf(stderr, "Failed to close file: %s", filename);
+    return 1;
+  }
+  return 0;
+}
 
-  int partB_input = day6PartB("input.txt");
-  printf("Day 6 Part B (input):\t%d\n", partB_input);
-  assert(partB_input == 3427);
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    printf("Missing input file!\n");
+    return 1;
+  }
 
+  char *filename = argv[1];
+  CharList input_list;
+  CharList_init_array(&input_list, 2148);
+
+  if (parse_input(&input_list, filename)) {
+    return 1;
+  }
+
+  printf("%d\n", input_list.size);
+
+  int part_a = day_6_part_a(&input_list);
+  printf("Day 06 Part A:\t%d\n", part_a);
+
+  int part_b = day_6_part_b(&input_list);
+  printf("Day 06 Part B:\t%d\n", part_b);
+
+  CharList_free_array(&input_list);
   return 0;
 }
