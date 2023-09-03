@@ -1,0 +1,7 @@
+*/*.o
+*/day_??
+*/test
+.DS_Store
+.dockerignore
+.gitignore
+Dockerfile

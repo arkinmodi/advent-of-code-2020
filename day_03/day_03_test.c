@@ -37,7 +37,7 @@ int test_part_b(char* filename, unsigned int expected) {
   return 0;
 }
 
-int test(void) {
+int main(void) {
   printf(
       "\n//////////////////////////////"
       " START DAY 03 TEST "
